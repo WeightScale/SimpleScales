@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:clickable="true"
+              android:background="@color/background_light">
+    <LinearLayout android:orientation="vertical"
+                  android:layout_width="fill_parent"
+                  android:layout_height="0dp"
+                  android:layout_weight="1"
+                  android:id="@+id/screenScale">
+        <LinearLayout android:layout_width="fill_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="vertical"
+                      android:background="@color/holo_blue_dark">
+            <FrameLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+                <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal"
+                             android:layout_width="match_parent"
+                             android:layout_height="@dimen/corners" android:id="@+id/progressBarStable"
+                             android:focusableInTouchMode="false"
+                             android:progressDrawable="@drawable/progress_stable"
+                             android:layout_marginTop="@dimen/padding"
+                             android:progress="46"
+                             android:layout_gravity="bottom"/>
+                <LinearLayout android:layout_width="fill_parent"
+                              android:layout_height="wrap_content"
+                              android:id="@+id/linearLayout"
+                              android:layout_gravity="center"
+                              android:orientation="horizontal">
+                    <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/weightTextView"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/text_big"
+                            android:gravity="center" android:clickable="true"
+                            style="@style/shadowEffect"
+                            android:textStyle="italic"
+                    />
+                </LinearLayout>
+            </FrameLayout>
+            <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal"
+                         android:layout_width="fill_parent"
+                         android:layout_height="@dimen/height_progress_weight" android:id="@+id/progressBarWeight"
+                         android:layout_gravity="left|center_vertical" android:progressDrawable="@drawable/progress_weight"
+                         android:focusableInTouchMode="false"
+                         android:layout_marginBottom="@dimen/padding"/>
+        </LinearLayout>
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/holo_blue_dark">
+
+            <TextView android:id="@+id/textBattery"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:textAppearance="?android:attr/textAppearanceMedium"
+                      android:textStyle="bold"
+                      android:textColor="@color/white"
+                      android:drawableLeft="@drawable/ic_action_battery"
+                      android:textSize="@dimen/text_small"
+                      android:gravity="left|center"/>
+
+            <TextView
+                    android:id="@+id/textTemperature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:drawableLeft="@drawable/ic_action_temperature"
+                    android:textSize="@dimen/text_small"
+                    android:layout_weight="1"
+                    android:gravity="left|center"/>
+
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageViewWait"
+                    android:src="@drawable/ic_action_wait_measure"/>
+        </LinearLayout>
+
+        <LinearLayout android:orientation="horizontal"
+                      android:layout_width="fill_parent"
+                      android:layout_height="0dp"
+                      android:background="@color/background_light"
+                      android:layout_weight="1">
+            <ListView android:layout_width="fill_parent"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/listView"/>
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" android:background="@color/holo_blue_dark">
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageMenu" android:layout_weight="1"
+                android:layout_gravity="bottom"
+                android:src="@drawable/ic_action_menu"
+                style="@style/CustomButtonImage" android:clickable="true"/>
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/buttonFinish" android:src="@drawable/ic_action_back" android:layout_weight="1"
+                android:layout_gravity="bottom"
+                android:adjustViewBounds="false"
+                style="@style/CustomButtonImage"/>
+    </LinearLayout>
+</LinearLayout>
+

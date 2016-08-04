@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- suppress AndroidLintIconLocation -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.konst.simple_scale">
+
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+
+    <uses-feature android:name="android.hardware.bluetooth"/>
+
+    <application
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:theme="@style/MyTheme">
+        <activity android:theme="@android:style/Theme.Dialog"
+                  android:name=".ActivityDialog"/>
+        <activity
+                android:name=".ActivityScales"
+                android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+                android:name=".ActivitySearch"
+                android:configChanges="orientation"
+                android:noHistory="true"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".settings.ActivityPreferences"
+                android:configChanges="orientation"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".settings.ActivityTuning"
+                android:configChanges="orientation"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".bootloader.ActivityBootloader"
+                android:configChanges="orientation"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".bootloader.ActivityConnect"
+                android:configChanges="orientation"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".ActivityAbout"
+                android:configChanges="orientation"
+                android:screenOrientation="portrait">
+        </activity>
+
+        <service
+                android:name=".services.ServiceScales"
+                android:enabled="true"
+                android:exported="true">
+        </service>
+    </application>
+
+</manifest>

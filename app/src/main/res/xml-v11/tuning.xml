@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Калибровка весов">
+        <PreferenceScreen android:title="Калибровка весов"
+                          android:summary="Калибровка весов с ипользыванием калиброваного веса">
+            <PreferenceCategory android:title="Калибровка весов">
+                <Preference android:title="Нулевой вес"
+                            android:summary="Установите нулевой вес на весах, и нажминте на поле" android:key="@string/KEY_POINT1"/>
+                <com.konst.simple_scale.settings.DialogPoint2 android:title="Контрольный вес"
+                                    android:summary=" Установите калиброваный вес на весы, и введите этот вес в поле диалога"
+                                    android:key="@string/KEY_POINT2" android:inputType="number"/>
+                <EditTextPreference android:title="Максимальный вес"
+                                    android:summary="Введите в поле диалога максимальный вес на который расчитаны весы"
+                                    android:key="@string/KEY_WEIGHT_MAX" android:inputType="number"/>
+                <EditTextPreference android:title="Батарея"
+                                    android:summary="Введите в поле текущий заряд батареи в процентах"
+                                    android:key="@string/KEY_CALL_BATTERY" android:inputType="number"/>
+            </PreferenceCategory>
+        </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Ввод калибровочных данных">
+        <PreferenceScreen android:title="Ввод калибровочных данных"
+                          android:summary="Ввод в ручную калибровочных данных которые известны">
+            <PreferenceCategory android:title="Ввод калибровочных данных">
+                <EditTextPreference android:title="Константа А"
+                                    android:summary="Введите константу А которая была вычеслена при калибровке весов"
+                                    android:key="@string/KEY_COEFFICIENT_A" android:inputType="numberDecimal|numberSigned"/>
+                <EditTextPreference android:title="Константа B"
+                                    android:summary="Введите константу В которая была вычеслена при калибровке весов"
+                                    android:key="@string/KEY_COEFFICIENT_B" android:inputType="numberDecimal"/>
+            </PreferenceCategory>
+        </PreferenceScreen>
+    </PreferenceCategory>
+    <EditTextPreference android:key="@string/KEY_SERVICE_COD" android:inputType="numberDecimal" android:title="Сервис код" android:summary="Сервис код для доступа к административным настройкам"/>
+    <Preference android:title="@string/Update_scale" android:summary="@string/TEXT_MESSAGE14" android:key="@string/KEY_UPDATE"/>
+</PreferenceScreen>

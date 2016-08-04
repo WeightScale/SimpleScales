@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="transparent">#00000000</color>
+    <color name="background">#ffb0b0b0</color>
+    <color name="background_light">#ffefefef</color>
+    <color name="background_item_list">#ffcccccc</color>
+    <color name="background_item_press">#ff9a9a9a</color>
+    <color name="background1">#ff898989</color>
+    <color name="background2">#ff4e4e4e</color>
+    <color name="text">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="dialog">#ff6c6c6c</color>
+    <color name="greenStart">#ff34e745</color>
+    <color name="greenMid">#ff0a9215</color>
+    <color name="greenEnd">#ff1dab31</color>
+    <color name="greedDs">#00A651</color>
+    <color name="redStart">#ffff957c</color>
+    <color name="redMid">#ffdd151c</color>
+    <color name="redEnd">#ffff5f57</color>
+    <color name="orange">#ff8800</color>
+    <color name="blue">#00AEEF</color>
+    <color name="holo_blue_dark">#ff0099cc</color>
+</resources>

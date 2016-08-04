@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--<PreferenceCategory android:title="@string/information">
+        <EditTextPreference android:title="@string/name_scales" android:key="@string/KEY_NAME" android:enabled="false"/>
+        <Preference android:title="@string/address_scales" android:key="@string/KEY_ADDRESS" android:enabled="false"/>
+    </PreferenceCategory>-->
+    <PreferenceCategory android:title="@string/Settings">
+        <PreferenceScreen android:title="@string/Set_values" android:summary="@string/TEXT_MESSAGES13">
+            <PreferenceCategory android:title="@string/Settings">
+                <PreferenceScreen android:title="@string/setting_auto_zero"
+                                  android:summary="@string/sum_setting_auto_zero">
+                    <PreferenceCategory android:title="@string/Auto_zero" android:summary="@string/sum_auto_zero">
+                        <com.konst.simple_scale.settings.IntegerEditPreference android:title="@string/Time" android:summary="@string/sum_time_auto_zero"
+                                            android:key="@string/KEY_TIMER_NULL" android:numeric="integer" android:inputType="number" android:defaultValue="120"/>
+                        <com.konst.simple_scale.settings.IntegerEditPreference android:title="@string/weight" android:summary="@string/sum_weight"
+                                            android:key="@string/KEY_MAX_NULL" android:numeric="integer" android:inputType="number" android:defaultValue="50"/>
+                    </PreferenceCategory>
+                </PreferenceScreen>
+                <com.konst.simple_scale.settings.DialogTimerOff android:title="@string/Timer_off" android:key="@string/KEY_TIMER" android:numeric="integer" android:inputType="number"/>
+                <com.konst.simple_scale.settings.DialogStepWeight android:title="@string/measuring_step" android:defaultValue="@integer/default_step_scale" android:key="@string/KEY_STEP" android:numeric="integer" android:inputType="number" />
+                <com.konst.simple_scale.settings.IntegerEditPreference android:title="@string/auto_capture" android:key="@string/KEY_AUTO_CAPTURE" android:defaultValue="@integer/default_max_auto_capture" android:numeric="integer" android:inputType="number"/>
+            </PreferenceCategory>
+        </PreferenceScreen>
+        <com.konst.simple_scale.settings.DialogFilterADC
+                android:title="@string/filter_adc"
+                android:summary="@string/sum_filter_adc"
+                android:key="@string/KEY_FILTER"/>
+        <Preference android:title="Для администратора" android:summary="Настройки для опытного пользователя (калибровка ...)" android:key="@string/KEY_ADMIN"/>
+        <Preference android:title="@string/zeroing" android:key="@string/KEY_NULL" android:inputType="number"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Программа">
+        <Preference android:title="@string/about" android:key="@string/KEY_ABOUT"/>
+    </PreferenceCategory>
+</PreferenceScreen>

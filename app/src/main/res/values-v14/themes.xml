@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<style name="MyTheme" parent="android:Theme.Holo.Light">
+    <item name="android:actionBarStyle">@style/MyActionBar</item>
+    <item name="numberPickerStyle">@style/NPWidget.Holo.Light.NumberPicker</item>
+    <item name="dialogFilterADCStyle">@style/WeightScaleDialogFilter</item>
+</style>
+
+</resources>
