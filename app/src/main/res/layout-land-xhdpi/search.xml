@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:tag="search"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:visibility="visible" android:id="@+id/searchScreen" android:background="@color/background_light">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:baselineAligned="false">
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:singleLine="false" android:text="@string/scales_list" android:textColor="@color/text"/>
+
+            <ListView
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:id="@+id/listViewDevices" android:layout_weight="1"
+                    android:clickable="false"
+                    android:padding="@dimen/corners" android:divider="@color/background"
+                    android:dividerHeight="@dimen/stroke"/>
+
+            <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/buttonSearchBluetooth" android:src="@drawable/ic_action_bluetooth"
+                    style="@style/CustomButtonImage"
+                    android:contentDescription="@string/Search_scale" android:clickable="true"
+                    android:background="@color/blue"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+            <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/textView"
+                  android:gravity="center_horizontal"
+                  android:singleLine="false" android:text="@string/search_log" android:textColor="@color/text"
+                    />
+
+            <ScrollView
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white" android:paddingLeft="1dp"
+                    >
+                <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textLog" android:maxLines="100" android:minLines="3"
+                        android:textColor="@android:color/black" android:padding="@dimen/padding"/>
+            </ScrollView>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -87,7 +87,7 @@ public class ActivityAbout extends Activity {
         STEP(R.string.Step_capacity_scale){
             final int resIdKg = R.string.scales_kg;
             @Override
-            String getValue() { return globals.getStepMeasuring() + " "; }
+            String getValue() { return scaleModule.getStepScale() + " "; }
 
             @Override
             int getMeasure() {  return resIdKg; }

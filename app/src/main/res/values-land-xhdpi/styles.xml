@@ -10,4 +10,11 @@
         <item name="android:shadowDy">10</item>
         <item name="android:shadowRadius">10</item>
     </style>
+
+    <style name="CustomButtonImage">
+        <item name="android:background">@drawable/image_selector</item>
+        <item name="android:clickable">true</item>
+        <item name="android:paddingTop">@dimen/corners</item>
+        <item name="android:paddingBottom">@dimen/corners</item>
+    </style>
 </resources>

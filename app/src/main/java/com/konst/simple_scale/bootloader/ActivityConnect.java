@@ -20,7 +20,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.konst.module.ErrorDeviceException;
 import com.konst.module.InterfaceResultCallback;
 import com.konst.module.Module;
 import com.konst.module.boot.BootModule;
@@ -28,6 +27,7 @@ import com.konst.module.scale.ObjectScales;
 import com.konst.module.scale.ScaleModule;
 import com.konst.simple_scale.Internet;
 import com.konst.simple_scale.R;
+import com.konst.simple_scale.services.ServiceScales;
 
 public class ActivityConnect extends Activity implements View.OnClickListener {
 
@@ -56,15 +56,22 @@ public class ActivityConnect extends Activity implements View.OnClickListener {
         textViewLog = (TextView) findViewById(R.id.textLog);
         try {
             //bootModule = new BootModule("bootloader", getIntent().getStringExtra("address"), connectResultCallback);
-            BootModule.create(getApplicationContext(), "bootloader", getIntent().getStringExtra("address")/*, connectResultCallback*/);
+            Intent intent = new Intent(getApplicationContext(), ServiceScales.class);
+            intent.setAction(ServiceScales.ACTION_CONNECT_SCALES);
+            Bundle bundle = new Bundle();
+            bundle.putString(ServiceScales.EXTRA_VERSION, "bootloader");
+            bundle.putString(ServiceScales.EXTRA_DEVICE, getIntent().getStringExtra("address"));
+            intent.putExtra(ServiceScales.EXTRA_BUNDLE, bundle);
+            startService(intent);
+            //BootModule.create(getApplicationContext(), "bootloader", getIntent().getStringExtra("address")/*, connectResultCallback*/);
             log(R.string.bluetooth_off, true);
             setupScale();
         } catch (Exception e) {
             Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG).show();
             finish();
-        } catch (ErrorDeviceException e) {
+        } /*catch (ErrorDeviceException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     //==================================================================================================================

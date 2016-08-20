@@ -2,10 +2,9 @@ package com.konst.simple_scale;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.Window;
 
 /**
- * Created by Kostya on 04.08.2016.
+ * @author Kostya  04.08.2016.
  */
 public class ActivityDialog extends Activity {
 

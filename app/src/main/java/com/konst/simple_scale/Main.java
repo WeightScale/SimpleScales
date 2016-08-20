@@ -5,7 +5,7 @@ import android.content.Intent;
 import com.konst.simple_scale.services.ServiceScales;
 
 /**
- * Created by Kostya on 04.08.2016.
+ * @author Kostya  04.08.2016.
  */
 public class Main extends Application {
 

@@ -1,6 +1,5 @@
 package com.konst.simple_scale;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -15,13 +14,13 @@ public class Globals {
     private ScaleModule scaleModule;
     private BootModule bootModule;
     /** Настройки для весов. */
-    private Preferences preferencesScale;
+    public Preferences preferencesScale;
     /** Настройки для обновления весов. */
     private PackageInfo packageInfo;
     /** Версия пограммы весового модуля. */
     private final int microSoftware = 4;
     /** Шаг измерения (округление). */
-    private int stepMeasuring;
+    //private int stepMeasuring;
     /** Шаг захвата (округление). */
     private int autoCapture;
     /** Время задержки для авто захвата после которого начинается захват в секундах. */
@@ -47,13 +46,13 @@ public class Globals {
         this.scaleModule = scaleModule;
     }
 
-    public void setStepMeasuring(int stepMeasuring) {
+    /*public void setStepMeasuring(int stepMeasuring) {
         this.stepMeasuring = stepMeasuring;
-    }
+    }*/
 
-    public int getStepMeasuring() {
+    /*public int getStepMeasuring() {
         return stepMeasuring;
-    }
+    }*/
 
     public void setBootModule(BootModule bootModule) {
         this.bootModule = bootModule;
@@ -100,7 +99,7 @@ public class Globals {
 
         preferencesScale = new Preferences(context.getApplicationContext());//загрузить настройки
 
-        stepMeasuring = preferencesScale.read(context.getString(R.string.KEY_STEP), context.getResources().getInteger(R.integer.default_step_scale));
+        //stepMeasuring = preferencesScale.read(context.getString(R.string.KEY_STEP), context.getResources().getInteger(R.integer.default_step_scale));
         autoCapture = preferencesScale.read(context.getString(R.string.KEY_AUTO_CAPTURE), context.getResources().getInteger(R.integer.default_max_auto_capture));
         //scaleModule.setTimerNull(Preferences.read(getString(R.string.KEY_TIMER_NULL), default_max_time_auto_null));
         //scaleModule.setWeightError(Preferences.read(getString(R.string.KEY_MAX_NULL), default_limit_auto_null));

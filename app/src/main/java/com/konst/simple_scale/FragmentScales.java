@@ -1,31 +1,25 @@
 package com.konst.simple_scale;
 
 import android.app.*;
+import android.app.Fragment;
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.*;
-import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.*;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.TextAppearanceSpan;
 import android.view.*;
 import android.widget.*;
-import com.konst.module.ErrorDeviceException;
 import com.konst.module.InterfaceModule;
-import com.konst.module.InterfaceResultCallback;
-import com.konst.module.Module;
 import com.konst.module.scale.ObjectScales;
 import com.konst.module.scale.ScaleModule;
 import com.konst.simple_scale.services.ServiceScales;
 import com.konst.simple_scale.settings.ActivityPreferences;
-import com.konst.simple_scale.settings.ActivityTuning;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,14 +27,16 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-public class ActivityScales extends Activity implements View.OnClickListener, Runnable {
+public class FragmentScales extends Fragment implements /*View.OnClickListener,*/ Runnable {
+    private ActivityMain activityMain;
+    private Context mContext;
     private Globals globals;
     private ScaleModule scaleModule;
     private SpannableStringBuilder textKg;
     private SpannableStringBuilder textBattery;
     private TextView textViewBattery, textViewTemperature;
     private ListView listView;
-    private ArrayList<WeightObject> arrayList;
+    private ArrayList<WeightObject> arrayList = new ArrayList<>();
     private ArrayAdapter<WeightObject> customListAdapter;
     private ProgressBar progressBarStable;
     private ProgressBar progressBarWeight;
@@ -49,13 +45,13 @@ public class ActivityScales extends Activity implements View.OnClickListener, Ru
     private SimpleGestureFilter detectorWeightView;
     private ImageView buttonFinish, imageViewWait;
     private Vibrator vibrator; //вибратор
-    private LinearLayout layoutScale;
+    //private LinearLayout layoutScale;
     private BaseReceiver baseReceiver; //приёмник намерений
 
     //private BatteryTemperatureCallback batteryTemperatureCallback;
     //private WeightCallback weightCallback;
 
-    public int numStable;
+    //public int numStable;
     private int moduleWeight;
     //int moduleSensorValue;
     protected int tempWeight;
@@ -64,8 +60,7 @@ public class ActivityScales extends Activity implements View.OnClickListener, Ru
     /**
      * Количество стабильных показаний веса для авто сохранения
      */
-    public static final int COUNT_STABLE = 64;
-    static final int REQUEST_SEARCH_SCALE = 2;
+    //public static final int COUNT_STABLE = 64;
 
     protected boolean isStable;
     private boolean flagExit = true;
@@ -87,126 +82,71 @@ public class ActivityScales extends Activity implements View.OnClickListener, Ru
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.buttonFinish:
-                onBackPressed();
-            break;
-            case R.id.imageMenu:
-                openOptionsMenu();
-            break;
-            default:
-        }
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        activityMain = (ActivityMain) activity;
+        mContext = activityMain;
+        baseReceiver = new BaseReceiver(mContext);
+        baseReceiver.register();
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
+        //customListAdapter.notifyDataSetChanged();
         try {startThread();
             screenUnlock();
         }catch (Exception e){}
-        //try {scaleModule.startProcess();}catch (Exception e){}
+        try {scaleModule.startProcess();}catch (Exception e){}
 
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         try {stopThread();}catch (Exception e){}
-        //try {scaleModule.stopProcess();}catch (Exception e){}
+        try {scaleModule.stopProcess();}catch (Exception e){}
     }
 
-    /**
-     * Called when the activity is first created.
-     */
-    //@TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_ACTION_BAR);
-        //Thread.setDefaultUncaughtExceptionHandler(new ReportHelper(this));
-        setContentView(R.layout.scale);
+        setRetainInstance(true);
+        setHasOptionsMenu(true);
 
         globals = Globals.getInstance();
-        globals.initialize(this);
+        scaleModule = globals.getScaleModule();
 
-        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
-        progressBarWeight = (ProgressBar) findViewById(R.id.progressBarWeight);
-        progressBarStable = (ProgressBar)findViewById(R.id.progressBarStable);
-        weightTextView = (TextView) findViewById(R.id.weightTextView);
-
-        layoutScale = (LinearLayout)findViewById(R.id.screenScale);
-        layoutScale.setVisibility(View.INVISIBLE);
-
-        buttonFinish = (ImageView) findViewById(R.id.buttonFinish);
-        buttonFinish.setOnClickListener(this);
-
-        imageViewWait = (ImageView)findViewById(R.id.imageViewWait);
-
-        textViewBattery = (TextView)findViewById(R.id.textBattery);
-        textViewTemperature = (TextView)findViewById(R.id.textTemperature);
-
-        listView = (ListView)findViewById(R.id.listView);
-        listView.setCacheColorHint(getResources().getColor(R.color.transparent));
-        listView.setVerticalFadingEdgeEnabled(false);
-
-        findViewById(R.id.imageMenu).setOnClickListener(this);
-
-        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
-        layoutParams.screenBrightness = 1.0f;
-        getWindow().setAttributes(layoutParams);
-
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (networkInfo != null) {
-            if (networkInfo.isAvailable()) {//Если используется
-                new Internet(this).turnOnWiFiConnection(false); // для телефонов у которых один модуль wifi и bluetooth
-            }
-        }
+        vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
 
         textKg = new SpannableStringBuilder(getResources().getString(R.string.scales_kg));
-        textKg.setSpan(new TextAppearanceSpan(this, R.style.SpanTextKg),0,textKg.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        textKg.setSpan(new TextAppearanceSpan(mContext, R.style.SpanTextKg),0,textKg.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
 
         textBattery = new SpannableStringBuilder("Заряд батареи ");
-        textBattery.setSpan(new TextAppearanceSpan(this, R.style.SpanTextBattery), 0, textBattery.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-
-        baseReceiver = new BaseReceiver(this);
-        baseReceiver.register();
-
-        startService(new Intent(getApplicationContext(), ServiceScales.class).setAction(ServiceScales.ACTION_CONNECT_SCALES));
-
-        /*try {
-            //scaleModule = new ScaleModule(globals.getPackageInfo().versionName, globals.getPreferencesScale().read(getString(R.string.KEY_LAST_SCALES), ""), connectResultCallback);
-            //ScaleModule.create(globals.getPackageInfo().versionName, globals.getPreferencesScale().read(getString(R.string.KEY_LAST_SCALES), ""), connectResultCallback);
-            ScaleModule.create(getApplicationContext(), "WeightScales", globals.getPreferencesScale().read(getString(R.string.KEY_LAST_SCALES), ""), connectResultCallback);
-            Toast.makeText(getBaseContext(), R.string.bluetooth_off, Toast.LENGTH_SHORT).show();
-            //globals.setScaleModule(scaleModule);
-        } catch (Exception e) {
-            Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-            finish();
-        } catch (ErrorDeviceException e) {
-            connectResultCallback.resultConnect(Module.ResultConnect.CONNECT_ERROR, e.getMessage(), null);
-        }*/
+        textBattery.setSpan(new TextAppearanceSpan(mContext, R.style.SpanTextBattery), 0, textBattery.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
     }
 
     @Override
-    public void onBackPressed() {
-        if (doubleBackToExitPressedOnce) {
-            super.onBackPressed();
-            //exit();
-            return;
-        }
-        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-        doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, R.string.press_again_to_exit , Toast.LENGTH_SHORT).show();
-        new Handler().postDelayed(new Runnable() {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.scale, null);
 
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce = false;
-            }
-        }, 2000);
+        progressBarWeight = (ProgressBar)view.findViewById(R.id.progressBarWeight);
+        progressBarStable = (ProgressBar)view.findViewById(R.id.progressBarStable);
+        weightTextView = (TextView)view.findViewById(R.id.weightTextView);
+
+        imageViewWait = (ImageView)view.findViewById(R.id.imageViewWait);
+
+        textViewBattery = (TextView)view.findViewById(R.id.textBattery);
+        textViewTemperature = (TextView)view.findViewById(R.id.textTemperature);
+
+        listView = (ListView)view.findViewById(R.id.listView);
+        listView.setCacheColorHint(getResources().getColor(R.color.transparent));
+        listView.setVerticalFadingEdgeEnabled(false);
+        setupListView();
+
+        setupWeightView();
+
+        return view;
     }
 
     @Override
@@ -216,83 +156,13 @@ public class ActivityScales extends Activity implements View.OnClickListener, Ru
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_scales, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.preferences:
-                startActivity(new Intent(this, ActivityPreferences.class));
-                break;
-            /*case R.id.tuning:
-                startActivity(new Intent(this, ActivityTuning.class));
-            break;*/
-            case R.id.search:
-                vibrator.vibrate(100);
-                openSearch();
-                break;
-            case R.id.exit:
-                closeOptionsMenu();
-                break;
-            case R.id.power_off:
-                AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                dialog.setTitle(getString(R.string.Scale_off));
-                dialog.setCancelable(false);
-                dialog.setPositiveButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if (i == DialogInterface.BUTTON_POSITIVE) {
-                            //if (globals.isScaleConnect())
-                            sendBroadcast(new Intent(getApplicationContext(), ServiceScales.class).setAction(ServiceScales.ACTION_POWER_OFF_SCALES));
-                            //try {scaleModule.powerOff();}catch (Exception e){}
-                            finish();
-                        }
-                    }
-                });
-                dialog.setNegativeButton(getString(R.string.Close), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        //finish();
-                    }
-                });
-                dialog.setMessage(getString(R.string.TEXT_MESSAGE15));
-                dialog.show();
-                break;
-            default:
-
-        }
-        return true;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        setProgressBarIndeterminateVisibility(false);
-        switch (resultCode) {
-            case RESULT_OK:
-                //ScaleModule.getInstance().setConnectResultCallback(connectResultCallback);
-                //connectResultCallback.resultConnect(Module.ResultConnect.STATUS_LOAD_OK,"", ScaleModule.getInstance());
-                break;
-            case RESULT_CANCELED:
-                //scaleModule.obtainMessage(RESULT_CANCELED, "Connect error").sendToTarget();
-                break;
-            default:
-        }
-    }
-
-    @Override
     public void run() {
         handler.obtainMessage(Action.START.ordinal()).sendToTarget();
         try { Thread.sleep(50); } catch (InterruptedException ignored) {}
         while (running) {
 
             weightViewIsSwipe = false;
-            numStable = 0;
+            //numStable = 0;
 
             while (running && !isCapture() && !weightViewIsSwipe) {                                                     //ждём начала нагружения
                 try { Thread.sleep(50); } catch (InterruptedException ignored) { }
@@ -302,11 +172,11 @@ public class ActivityScales extends Activity implements View.OnClickListener, Ru
             while (running && !(isStable || weightViewIsSwipe)) {                                                       //ждем стабилизации веса или нажатием выбора веса
                 try { Thread.sleep(50); } catch (InterruptedException ignored) {}
                 if (!touchWeightView) {                                                                                 //если не прикасаемся к индикатору тогда стабилизируем вес
-                    isStable = processStable(moduleWeight);
-                    handler.obtainMessage(Action.UPDATE_PROGRESS.ordinal(), numStable, 0).sendToTarget();
+                    //isStable = processStable(moduleWeight);
+                    //handler.obtainMessage(Action.UPDATE_PROGRESS.ordinal(), numStable, 0).sendToTarget();
                 }
             }
-            numStable = COUNT_STABLE;
+            //numStable = COUNT_STABLE;
             if (!running) {
                 break;
             }
@@ -328,18 +198,74 @@ public class ActivityScales extends Activity implements View.OnClickListener, Ru
         }
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.menu_scales, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.preferences:
+                startActivity(new Intent(mContext, ActivityPreferences.class));
+            break;
+            case R.id.search:
+                vibrator.vibrate(100);
+                activityMain.openSearch();
+            break;
+            case R.id.exit:
+                //closeOptionsMenu();
+            break;
+            case R.id.power_off:
+                AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
+                dialog.setTitle(getString(R.string.Scale_off));
+                dialog.setCancelable(false);
+                dialog.setPositiveButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (i == DialogInterface.BUTTON_POSITIVE) {
+                            //if (globals.isScaleConnect())
+                            mContext.startService(new Intent(mContext, ServiceScales.class).setAction(ServiceScales.ACTION_POWER_OFF_SCALES));
+                            //try {scaleModule.powerOff();}catch (Exception e){}
+                            activityMain.finish();
+                        }
+                    }
+                });
+                dialog.setNegativeButton(getString(R.string.Close), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        //finish();
+                    }
+                });
+                dialog.setMessage(getString(R.string.TEXT_MESSAGE15));
+                dialog.show();
+            break;
+            default:
+
+        }
+        return true;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
     private void setupWeightView() {
 
-        Intent intent = getIntent();
-        scaleModule = (ScaleModule) intent.getSerializableExtra(ServiceScales.EXTRA_SCALES_MODULE);
         if (scaleModule != null){
             progressBarWeight.setMax(scaleModule.getMarginTenzo());
             progressBarWeight.setSecondaryProgress(scaleModule.getLimitTenzo());
+            progressBarStable.setMax(scaleModule.STABLE_NUM_MAX);
         }
 
         //progressBarStable = (ProgressBar)findViewById(R.id.progressBarStable);
-        progressBarStable.setMax(COUNT_STABLE);
-        progressBarStable.setProgress(numStable = 0);
+
+        //progressBarStable.setProgress(numStable = 0);
+        progressBarStable.setProgress(0);
 
         //weightTextView = (TextView) findViewById(R.id.weightTextView);
 
@@ -364,11 +290,11 @@ public class ActivityScales extends Activity implements View.OnClickListener, Ru
             public void onDoubleTap() {
                 progressBarStable.setProgress(0);
                 vibrator.vibrate(100);
-                new ZeroThread(ActivityScales.this).start();
+                new ZeroThread(mContext).start();
             }
         };
 
-        detectorWeightView = new SimpleGestureFilter(this, weightViewGestureListener);
+        detectorWeightView = new SimpleGestureFilter(activityMain, weightViewGestureListener);
         detectorWeightView.setSwipeMinVelocity(50);
         weightTextView.setOnTouchListener(new View.OnTouchListener() {
 
@@ -394,22 +320,13 @@ public class ActivityScales extends Activity implements View.OnClickListener, Ru
                 return false;
             }
         });
-
-        layoutScale.setVisibility(View.VISIBLE);
     }
 
     private void setupListView(){
-        arrayList = new ArrayList<>();
-        customListAdapter = new CustomListAdapter(this, R.layout.list_item_weight, arrayList);
-        listView.setAdapter(customListAdapter);
-    }
 
-    /**
-     * Открыть активность поиска весов.
-     */
-    private void openSearch() {
-        //try{ scaleModule.dettach(); }catch (Exception e){}
-        startActivityForResult(new Intent(getBaseContext(), ActivitySearch.class), REQUEST_SEARCH_SCALE);
+        customListAdapter = new CustomListAdapter(mContext, R.layout.list_item_weight, arrayList);
+        listView.setAdapter(customListAdapter);
+        customListAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -419,7 +336,7 @@ public class ActivityScales extends Activity implements View.OnClickListener, Ru
      * @return true - Условия захвата истины. */
     public boolean isCapture() {
         boolean capture = false;
-        while (getWeightToStepMeasuring(moduleWeight) > globals.getAutoCapture()) {
+        while (moduleWeight > globals.getAutoCapture()) {
             if (capture) {
                 return true;
             } else {
@@ -430,8 +347,8 @@ public class ActivityScales extends Activity implements View.OnClickListener, Ru
         return false;
     }
 
-    public boolean processStable(int weight) {
-        if (tempWeight - globals.getStepMeasuring() <= weight && tempWeight + globals.getStepMeasuring() >= weight) {
+    /*public boolean processStable(int weight) {
+        if (tempWeight - scaleModule.getStepScale() <= weight && tempWeight + scaleModule.getStepScale() >= weight) {
             if (++numStable >= COUNT_STABLE) {
                 return true;
             }
@@ -440,50 +357,26 @@ public class ActivityScales extends Activity implements View.OnClickListener, Ru
         }
         tempWeight = weight;
         return false;
-    }
+    }*/
 
-    /**
-     * Преобразовать вес в шкалу шага веса.
-     * Шаг измерения установливается в настройках.
-     *
-     * @param weight Вес для преобразования.
-     * @return Преобразованый вес. */
-    private int getWeightToStepMeasuring(int weight) {
-        int i = weight / globals.getStepMeasuring();
-        i*=globals.getStepMeasuring();
-        return i;
-        //return weight / globals.getStepMeasuring() * globals.getStepMeasuring();
-    }
+
 
     protected void exit() {
-        stopThread();
         baseReceiver.unregister();
-        /*try{
-            scaleModule.stopProcess();
-            scaleModule.dettach();
-        }catch (Exception e){}*/
-        BluetoothAdapter.getDefaultAdapter().disable();
-        while (BluetoothAdapter.getDefaultAdapter().isEnabled());
-        stopService(new Intent(this, ServiceScales.class));
         //todo System.exit(0);
-        //int pid = android.os.Process.myPid();
-        //android.os.Process.killProcess(pid);
-        //System.runFinalization();
     }
 
     private void wakeUp(){
-        PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
+        PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = pm.newWakeLock((PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
         wakeLock.acquire();
     }
 
     private void screenUnlock(){
-        KeyguardManager keyguardManager = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
+        KeyguardManager keyguardManager = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
         KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("TAG");
         keyguardLock.disableKeyguard();
     }
-
-
 
     /**
      * Обработчик сообщений.
@@ -539,8 +432,8 @@ public class ActivityScales extends Activity implements View.OnClickListener, Ru
 
         @Override
         public void run() {
-            //scaleModule.setOffsetScale();
-            sendBroadcast(new Intent(getApplicationContext(), ServiceScales.class).setAction(ServiceScales.ACTION_OFFSET_SCALES));
+            scaleModule.setOffsetScale();
+            //mContext.sendBroadcast(new Intent(mContext, ServiceScales.class).setAction(ServiceScales.ACTION_OFFSET_SCALES));
             if (dialog.isShowing()) {
                 dialog.dismiss();
             }
@@ -548,17 +441,18 @@ public class ActivityScales extends Activity implements View.OnClickListener, Ru
     }
 
     class BaseReceiver extends BroadcastReceiver {
-        Context mContext;
-        ProgressDialog dialogSearch;
-        IntentFilter intentFilter;
+        private final Context mContext;
+        private SpannableStringBuilder w;
+        private Rect bounds;
+        private ProgressDialog dialogSearch;
+        private final IntentFilter intentFilter;
         protected boolean isRegistered;
 
         BaseReceiver(Context context){
             mContext = context;
             intentFilter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-            intentFilter.addAction(InterfaceModule.ACTION_LOAD_OK);
-            intentFilter.addAction(InterfaceModule.ACTION_ATTACH_START);
-            intentFilter.addAction(InterfaceModule.ACTION_ATTACH_FINISH);
+            intentFilter.addAction(InterfaceModule.ACTION_SCALES_RESULT);
+            intentFilter.addAction(InterfaceModule.ACTION_WEIGHT_STABLE);
         }
 
         @Override
@@ -569,46 +463,81 @@ public class ActivityScales extends Activity implements View.OnClickListener, Ru
                     case BluetoothAdapter.ACTION_STATE_CHANGED:
                         switch (BluetoothAdapter.getDefaultAdapter().getState()) {
                             case BluetoothAdapter.STATE_OFF:
-                                Toast.makeText(getBaseContext(), R.string.bluetooth_off, Toast.LENGTH_SHORT).show();
-                                new Internet(getApplicationContext()).turnOnWiFiConnection(false);
+                                Toast.makeText(mContext, R.string.bluetooth_off, Toast.LENGTH_SHORT).show();
+                                new Internet(mContext).turnOnWiFiConnection(false);
                                 BluetoothAdapter.getDefaultAdapter().enable();
                             break;
                             case BluetoothAdapter.STATE_TURNING_ON:
-                                Toast.makeText(getBaseContext(), R.string.bluetooth_turning_on, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, R.string.bluetooth_turning_on, Toast.LENGTH_SHORT).show();
                             break;
                             case BluetoothAdapter.STATE_ON:
-                                Toast.makeText(getBaseContext(), R.string.bluetooth_on, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, R.string.bluetooth_on, Toast.LENGTH_SHORT).show();
                             break;
                             default:
                                 break;
                         }
                         break;
-                    case InterfaceModule.ACTION_LOAD_OK:
-                        ObjectScales objectScales = (ObjectScales) intent.getSerializableExtra(InterfaceModule.EXTRA_MODULE);
-                        int str = objectScales.getBattery();
-                    break;
-                    case InterfaceModule.ACTION_ATTACH_START:
-                        if(dialogSearch != null){
-                                if(dialogSearch.isShowing())
-                                    break;
-                            }
-                        dialogSearch = new ProgressDialog(ActivityScales.this);
-                        dialogSearch.setCancelable(true);
-                        dialogSearch.setIndeterminate(false);
-                        dialogSearch.show();
-                        dialogSearch.setContentView(R.layout.custom_progress_dialog);
-                        if (intent != null){
-                            String msg = intent.getStringExtra(InterfaceModule.EXTRA_DEVICE_NAME);
-                            TextView tv1 = (TextView) dialogSearch.findViewById(R.id.textView1);
-                            tv1.setText(getString(R.string.Connecting) + '\n' + msg);
+                    case InterfaceModule.ACTION_SCALES_RESULT:
+                        ObjectScales obj = (ObjectScales) intent.getSerializableExtra(InterfaceModule.EXTRA_SCALES);
+                        if (obj == null)
+                            return;
+                        moduleWeight = obj.getWeight();
+                        final String textWeight = String.valueOf(moduleWeight);
+                        /** Обновляем прогресс стабилизации веса. */
+                        handler.obtainMessage(Action.UPDATE_PROGRESS.ordinal(), obj.getStableNum(), 0).sendToTarget();
+                        switch (obj.getResultWeight()) {
+                            case WEIGHT_NORMAL:
+                                w = new SpannableStringBuilder(textWeight);
+                                w.setSpan(new ForegroundColorSpan(Color.WHITE), 0, w.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                                w.append(textKg);
+                                progressBarWeight.setProgress(obj.getTenzoSensor());
+                                bounds = progressBarWeight.getProgressDrawable().getBounds();
+                                progressBarWeight.setProgressDrawable(dProgressWeight);
+                                progressBarWeight.getProgressDrawable().setBounds(bounds);
+                                break;
+                            case WEIGHT_LIMIT:
+                                w = new SpannableStringBuilder(textWeight);
+                                w.setSpan(new ForegroundColorSpan(Color.RED), 0, w.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                                w.append(textKg);
+                                progressBarWeight.setProgress(obj.getTenzoSensor());
+                                bounds = progressBarWeight.getProgressDrawable().getBounds();
+                                progressBarWeight.setProgressDrawable(dWeightDanger);
+                                progressBarWeight.getProgressDrawable().setBounds(bounds);
+                                break;
+                            case WEIGHT_MARGIN:
+                                w = new SpannableStringBuilder(String.valueOf(moduleWeight));
+                                w.setSpan(new ForegroundColorSpan(Color.RED), 0, w.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                                progressBarWeight.setProgress(obj.getTenzoSensor());
+                                vibrator.vibrate(100);
+                                break;
+                            case WEIGHT_ERROR:
+                                w = new SpannableStringBuilder("- - -");
+                                w.setSpan(new ForegroundColorSpan(Color.RED), 0, w.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                                moduleWeight = 0;
+                                progressBarWeight.setProgress(0);
+                                break;
+                            default:
                         }
-
+                        weightTextView.setText(w, TextView.BufferType.SPANNABLE);
+                        textViewTemperature.setText(obj.getTemperature() + "°C");
+                        if (obj.getBattery() > 15) {
+                            textViewBattery.setText(obj.getBattery() + "%");
+                            textViewBattery.setTextColor(Color.WHITE);
+                            textViewBattery.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_battery, 0, 0, 0);
+                        } else if (obj.getBattery() >= 0) {
+                            textViewBattery.setText(obj.getBattery() + "%");
+                            textViewBattery.setTextColor(Color.RED);
+                            textViewBattery.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_battery_red, 0, 0, 0);
+                        }else {
+                            textViewBattery.setText("нет данных!!!");
+                            textViewBattery.setTextColor(Color.BLUE);
+                            textViewBattery.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_battery_red, 0, 0, 0);
+                        }
+                        //    }
                     break;
-                    case InterfaceModule.ACTION_ATTACH_FINISH:
-                        if (dialogSearch.isShowing()) {
-                                dialogSearch.dismiss();
-                            }
-                        break;
+                    case InterfaceModule.ACTION_WEIGHT_STABLE:
+                        isStable = true;
+                    break;
                     default:
                 }
             }
@@ -627,7 +556,7 @@ public class ActivityScales extends Activity implements View.OnClickListener, Ru
             }
             return false;
         }
-    };
+    }
 
     public void startThread(){
         if(threadAutoWeight != null)
@@ -757,11 +686,11 @@ public class ActivityScales extends Activity implements View.OnClickListener, Ru
     }
 
     void showNotify(){
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
         mBuilder.setSmallIcon(R.mipmap.ic_launcher);
         mBuilder.setContentTitle("test").build();
-        mBuilder.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, ActivityScales.class), PendingIntent.FLAG_UPDATE_CURRENT));
-        NotificationManager mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mBuilder.setContentIntent(PendingIntent.getActivity(mContext, 0, new Intent(mContext, FragmentScales.class), PendingIntent.FLAG_UPDATE_CURRENT));
+        NotificationManager mNotificationManager =  (NotificationManager)mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(0, mBuilder.build());
     }
 

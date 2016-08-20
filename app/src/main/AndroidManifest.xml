@@ -21,18 +21,12 @@
         <activity android:theme="@android:style/Theme.Dialog"
                   android:name=".ActivityDialog"/>
         <activity
-                android:name=".ActivityScales"
+                android:name=".ActivityMain"
                 android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
-        <activity
-                android:name=".ActivitySearch"
-                android:configChanges="orientation"
-                android:noHistory="true"
-                android:screenOrientation="portrait">
         </activity>
         <activity
                 android:name=".settings.ActivityPreferences"

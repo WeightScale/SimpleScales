@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        android:tag="search"
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -56,12 +57,12 @@
                 android:layout_weight="1"
                 style="@style/CustomButtonImage"
                 android:contentDescription="@string/Search_scale" android:clickable="true"/>
-        <ImageView
+        <!--<ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/buttonBack" android:src="@drawable/ic_action_back" android:layout_weight="1"
                 style="@style/CustomButtonImage" android:clickable="true"
-                android:contentDescription="@string/Come_back"/>
+                android:contentDescription="@string/Come_back"/>-->
     </LinearLayout>
 
 </LinearLayout>

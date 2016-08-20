@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:tag="scale"
               android:orientation="vertical"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:clickable="true"
               android:background="@color/background_light">
-    <LinearLayout android:orientation="vertical"
-                  android:layout_width="fill_parent"
-                  android:layout_height="0dp"
-                  android:layout_weight="1"
-                  android:id="@+id/screenScale">
-        <LinearLayout android:layout_width="fill_parent"
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/screenScale"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+        <LinearLayout android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:orientation="vertical"
-                      android:background="@color/holo_blue_dark">
+                      android:background="@color/holo_blue_dark"
+                      android:id="@+id/linearLayout2"
+                >
             <FrameLayout
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent">
@@ -37,7 +42,8 @@
                               android:layout_height="wrap_content"
                               android:id="@+id/linearLayout"
                               android:layout_gravity="center"
-                              android:orientation="vertical">
+                              android:orientation="vertical"
+                        >
                     <TextView
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
@@ -46,12 +52,13 @@
                             android:textSize="@dimen/text_big"
                             android:textAppearance="?android:attr/textAppearanceMedium"
                             android:gravity="center" android:clickable="true"
-                            style="@style/shadowEffect" android:textStyle="bold|italic" android:text="54268"
-                            android:layout_gravity="top"/>
+                            style="@style/shadowEffect" android:textStyle="bold|italic"
+                            android:layout_gravity="top"
+                            android:text="12345"/>
                 </LinearLayout>
 
                 <LinearLayout
-                        android:orientation="vertical"
+                        android:orientation="horizontal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@color/transparent">
@@ -65,7 +72,8 @@
                               android:drawableLeft="@drawable/ic_action_battery"
                               android:textSize="@dimen/text_small"
                               android:gravity="left|center"
-                    />
+                              android:autoText="false"
+                            />
 
                     <TextView
                             android:id="@+id/textTemperature"
@@ -92,18 +100,15 @@
 
         </LinearLayout>
 
-        <LinearLayout android:orientation="horizontal"
-                      android:layout_width="fill_parent"
-                      android:layout_height="0dp"
-                      android:background="@color/background_light"
-                      android:layout_weight="1">
-            <ListView android:layout_width="fill_parent"
-                      android:layout_height="wrap_content"
-                      android:id="@+id/listView"
-            />
-        </LinearLayout>
+        <ListView android:layout_width="0dp"
+                  android:layout_height="wrap_content"
+                  android:id="@+id/listView"
+                  android:layout_gravity="center_horizontal"
+                  android:layout_weight="1"/>
+
     </LinearLayout>
-    <LinearLayout
+
+    <!--<LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" android:background="@color/holo_blue_dark">
@@ -121,6 +126,6 @@
                 android:layout_gravity="bottom"
                 android:adjustViewBounds="false"
                 style="@style/CustomButtonImage"/>
-    </LinearLayout>
+    </LinearLayout>-->
 </LinearLayout>
 

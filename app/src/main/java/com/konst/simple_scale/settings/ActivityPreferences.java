@@ -158,7 +158,7 @@ public class ActivityPreferences extends PreferenceActivity implements SharedPre
             @Override
             void setup(Preference name)throws Exception {
                 final Context context = name.getContext();
-                name.setTitle(context.getString(R.string.measuring_step) + ' ' + globals.getStepMeasuring() + ' ' + context.getString(R.string.scales_kg));
+                name.setTitle(context.getString(R.string.measuring_step) + ' ' + scaleModule.getStepScale() + ' ' + context.getString(R.string.scales_kg));
                 name.setSummary(context.getString(R.string.The_range_is_from_1_to) + context.getResources().getInteger(R.integer.default_max_step_scale) + ' ' + context.getString(R.string.scales_kg));
                 name.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
@@ -168,10 +168,10 @@ public class ActivityPreferences extends PreferenceActivity implements SharedPre
                             return false;
                         }
 
-                        globals.setStepMeasuring(Integer.valueOf(o.toString()));
-                        preference.setTitle(context.getString(R.string.measuring_step) + ' ' + globals.getStepMeasuring() + ' ' + context.getString(R.string.scales_kg));
+                        scaleModule.setStepScale(Integer.valueOf(o.toString()));
+                        preference.setTitle(context.getString(R.string.measuring_step) + ' ' + scaleModule.getStepScale() + ' ' + context.getString(R.string.scales_kg));
                         //preference.getEditor().putInt(preference.getKey(), main.getStepMeasuring());
-                        Toast.makeText(context, context.getString(R.string.preferences_yes) + ' ' + globals.getStepMeasuring() + ' ' + context.getString(R.string.scales_kg), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, context.getString(R.string.preferences_yes) + ' ' + scaleModule.getStepScale() + ' ' + context.getString(R.string.scales_kg), Toast.LENGTH_SHORT).show();
                         return true;
                     }
                 });
@@ -260,7 +260,6 @@ public class ActivityPreferences extends PreferenceActivity implements SharedPre
                                         key = true;
                                     if (key){
                                         context.startActivity(new Intent().setClass(context,ActivityTuning.class));
-                                        return;
                                     }
                                 }catch (Exception e){}
                             }

@@ -18,9 +18,10 @@ import com.konst.module.*;
 import com.konst.module.boot.BootModule;
 import com.konst.module.scale.ObjectScales;
 import com.konst.module.scale.ScaleModule;
-import com.konst.simple_scale.ActivitySearch;
+import com.konst.simple_scale.ActivityMain;
 import com.konst.simple_scale.Globals;
 import com.konst.simple_scale.R;
+import com.konst.simple_scale.services.ServiceScales;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,11 +29,7 @@ import java.util.Arrays;
 
 
 /**
- * Created with IntelliJ IDEA.
- * User: Kostya
- * Date: 25.12.13
- * Time: 21:49
- * To change this template use File | Settings | File Templates.
+ * @author Kostya
  */
 public class ActivityBootloader extends Activity implements View.OnClickListener {
     private ImageView startBoot, buttonBack;
@@ -172,14 +169,21 @@ public class ActivityBootloader extends Activity implements View.OnClickListener
                     case DialogInterface.BUTTON_POSITIVE:
                         try {
                             //bootModule = new BootModule("BOOT", addressDevice, connectResultCallback);
-                            BootModule.create(getApplicationContext(), "BOOT", addressDevice/*, connectResultCallback*/);
+                            Intent intent = new Intent(getApplicationContext(), ServiceScales.class);
+                            intent.setAction(ServiceScales.ACTION_CONNECT_SCALES);
+                            Bundle bundle = new Bundle();
+                            bundle.putString(ServiceScales.EXTRA_VERSION, "BOOT");
+                            bundle.putString(ServiceScales.EXTRA_DEVICE, addressDevice);
+                            intent.putExtra(ServiceScales.EXTRA_BUNDLE, bundle);
+                            startService(intent);
+                            //BootModule.create(getApplicationContext(), "BOOT", addressDevice/*, connectResultCallback*/);
                             log(getString(R.string.bluetooth_off));
                         } catch (Exception e) {
                             log(e.getMessage());
                             finish();
-                        } catch (ErrorDeviceException e) {
+                        } /*catch (ErrorDeviceException e) {
                             connectResultCallback.resultConnect(Module.ResultConnect.CONNECT_ERROR, e.getMessage(), null);
-                        }
+                        }*/
                         /*try {
                             globals.setBootModule(bootModule);
                             //bootModule.init(addressDevice);
@@ -311,7 +315,7 @@ public class ActivityBootloader extends Activity implements View.OnClickListener
                             break;
                         case CONNECT_ERROR:
                             //Intent intent = new Intent(getBaseContext(), ActivityConnect.class);
-                            Intent intent = new Intent(getBaseContext(), ActivitySearch.class);
+                            Intent intent = new Intent(getBaseContext(), ActivityMain.class);
                             intent.putExtra("address", addressDevice);
                             intent.setAction("com.kostya.cranescale.BOOTLOADER");
                             startActivityForResult(intent, REQUEST_CONNECT_BOOT);
