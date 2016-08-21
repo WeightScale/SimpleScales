@@ -94,7 +94,7 @@ public class FragmentScales extends Fragment implements /*View.OnClickListener,*
     public void onResume() {
         super.onResume();
         //customListAdapter.notifyDataSetChanged();
-        try {startThread();
+        try {//startThread();
             screenUnlock();
         }catch (Exception e){}
         try {scaleModule.startProcess();}catch (Exception e){}
@@ -104,7 +104,7 @@ public class FragmentScales extends Fragment implements /*View.OnClickListener,*
     @Override
     public void onPause() {
         super.onPause();
-        try {stopThread();}catch (Exception e){}
+        /*try {stopThread();}catch (Exception e){}*/
         try {scaleModule.stopProcess();}catch (Exception e){}
     }
 
@@ -168,22 +168,22 @@ public class FragmentScales extends Fragment implements /*View.OnClickListener,*
                 try { Thread.sleep(50); } catch (InterruptedException ignored) { }
             }
             handler.obtainMessage(Action.START_WEIGHTING.ordinal()).sendToTarget();
-            isStable = false;
+            /*isStable = false;
             while (running && !(isStable || weightViewIsSwipe)) {                                                       //ждем стабилизации веса или нажатием выбора веса
                 try { Thread.sleep(50); } catch (InterruptedException ignored) {}
                 if (!touchWeightView) {                                                                                 //если не прикасаемся к индикатору тогда стабилизируем вес
                     //isStable = processStable(moduleWeight);
                     //handler.obtainMessage(Action.UPDATE_PROGRESS.ordinal(), numStable, 0).sendToTarget();
                 }
-            }
+            }*/
             //numStable = COUNT_STABLE;
             if (!running) {
                 break;
             }
             tempWeight = moduleWeight;
-            if (isStable || weightViewIsSwipe) {
+            /*if (isStable || weightViewIsSwipe) {
                 handler.obtainMessage(Action.STORE_WEIGHTING.ordinal(), moduleWeight, 0).sendToTarget();                 //сохраняем стабильный вес
-            }
+            }*/
 
             weightViewIsSwipe = false;
 
@@ -281,7 +281,8 @@ public class FragmentScales extends Fragment implements /*View.OnClickListener,*
                     case SimpleGestureFilter.SWIPE_RIGHT:
                     case SimpleGestureFilter.SWIPE_LEFT:
                         weightViewIsSwipe = true;
-                        break;
+                        activityMain.sendBroadcast(new Intent(InterfaceModule.ACTION_WEIGHT_STABLE));
+                    break;
                     default:
                 }
             }
@@ -537,6 +538,7 @@ public class FragmentScales extends Fragment implements /*View.OnClickListener,*
                     break;
                     case InterfaceModule.ACTION_WEIGHT_STABLE:
                         isStable = true;
+                        handler.obtainMessage(Action.STORE_WEIGHTING.ordinal(), moduleWeight, 0).sendToTarget();                 //сохраняем стабильный вес
                     break;
                     default:
                 }

@@ -56,8 +56,9 @@ public class ServiceScales extends Service {
                         break;
                     case ACTION_POWER_OFF_SCALES:
                         try {scaleModule.powerOff();}catch (Exception e){}
+                        notificationManager.cancel(DEFAULT_NOTIFICATION_ID);
                         stopSelf();
-                        break;
+                        return START_NOT_STICKY;
                     case ACTION_OFFSET_SCALES:
                         try {scaleModule.setOffsetScale();}catch (Exception e){}
                         break;
@@ -71,7 +72,7 @@ public class ServiceScales extends Service {
 
         sendNotification(getString(R.string.app_name),getString(R.string.app_name),"Программа \"Весы автомобильные\" ");
 
-        return Service.START_STICKY;
+        return START_STICKY;
     }
 
     @Override
