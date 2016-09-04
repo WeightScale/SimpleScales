@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="text_big">110sp</dimen>
+    <dimen name="text_big">80sp</dimen>
     <dimen name="text_large_xx">40sp</dimen>
     <dimen name="text_large_x">30sp</dimen>
-    <dimen name="text_large">42sp</dimen>
+    <dimen name="text_large">22sp</dimen>
     <dimen name="text_medium">18sp</dimen>
     <dimen name="text_small">14sp</dimen>
-    <dimen name="text_micro">20sp</dimen>
+    <dimen name="text_micro">12sp</dimen>
     <dimen name="text_nano">10sp</dimen>
     <dimen name="corners">5dip</dimen>
     <dimen name="corners1">6dip</dimen>

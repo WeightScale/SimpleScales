@@ -15,6 +15,8 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.TextAppearanceSpan;
 import android.view.*;
 import android.widget.*;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.konst.module.InterfaceModule;
 import com.konst.module.scale.ObjectScales;
 import com.konst.module.scale.ScaleModule;
@@ -36,7 +38,7 @@ public class FragmentScales extends Fragment implements /*View.OnClickListener,*
     private SpannableStringBuilder textBattery;
     private TextView textViewBattery, textViewTemperature;
     private ListView listView;
-    private ArrayList<WeightObject> arrayList = new ArrayList<>();
+    private final ArrayList<WeightObject> arrayList = new ArrayList<>();
     private ArrayAdapter<WeightObject> customListAdapter;
     private ProgressBar progressBarStable;
     private ProgressBar progressBarWeight;
@@ -45,28 +47,17 @@ public class FragmentScales extends Fragment implements /*View.OnClickListener,*
     private SimpleGestureFilter detectorWeightView;
     private ImageView buttonFinish, imageViewWait;
     private Vibrator vibrator; //вибратор
-    //private LinearLayout layoutScale;
     private BaseReceiver baseReceiver; //приёмник намерений
 
-    //private BatteryTemperatureCallback batteryTemperatureCallback;
-    //private WeightCallback weightCallback;
-
-    //public int numStable;
     private int moduleWeight;
-    //int moduleSensorValue;
     protected int tempWeight;
     private Thread threadAutoWeight;
     boolean running;
-    /**
-     * Количество стабильных показаний веса для авто сохранения
-     */
-    //public static final int COUNT_STABLE = 64;
 
     protected boolean isStable;
     private boolean flagExit = true;
     private boolean touchWeightView;
     private boolean weightViewIsSwipe;
-    private boolean doubleBackToExitPressedOnce;
 
     enum Action{
         /** Остановка взвешивания.          */
@@ -98,7 +89,7 @@ public class FragmentScales extends Fragment implements /*View.OnClickListener,*
             screenUnlock();
         }catch (Exception e){}
         try {scaleModule.startProcess();}catch (Exception e){}
-
+        try {scaleModule.stableActionEnable(true);}catch (Exception e){}
     }
 
     @Override
@@ -106,6 +97,7 @@ public class FragmentScales extends Fragment implements /*View.OnClickListener,*
         super.onPause();
         /*try {stopThread();}catch (Exception e){}*/
         try {scaleModule.stopProcess();}catch (Exception e){}
+        try {scaleModule.stableActionEnable(false);}catch (Exception e){}
     }
 
     @Override
@@ -129,6 +121,13 @@ public class FragmentScales extends Fragment implements /*View.OnClickListener,*
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.scale, null);
+
+        AdView mAdView = (AdView) view.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                //.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                //.addTestDevice(Main.getInstance().getDeviceId())
+                .build();
+        mAdView.loadAd(adRequest);
 
         progressBarWeight = (ProgressBar)view.findViewById(R.id.progressBarWeight);
         progressBarStable = (ProgressBar)view.findViewById(R.id.progressBarStable);
@@ -187,8 +186,8 @@ public class FragmentScales extends Fragment implements /*View.OnClickListener,*
 
             weightViewIsSwipe = false;
 
-            while (running && !((moduleWeight >= tempWeight + globals.getDefaultMinAutoCapture())
-                    || (moduleWeight <= tempWeight- globals.getDefaultMinAutoCapture()))) {
+            while (running && !(moduleWeight >= tempWeight + globals.getDefaultMinAutoCapture()
+                    || moduleWeight <= tempWeight- globals.getDefaultMinAutoCapture())) {
 
                 try { Thread.sleep(50); } catch (InterruptedException ignored) {}                                       // ждем изменения веса
             }
@@ -249,17 +248,12 @@ public class FragmentScales extends Fragment implements /*View.OnClickListener,*
         return true;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
     private void setupWeightView() {
 
         if (scaleModule != null){
             progressBarWeight.setMax(scaleModule.getMarginTenzo());
             progressBarWeight.setSecondaryProgress(scaleModule.getLimitTenzo());
-            progressBarStable.setMax(scaleModule.STABLE_NUM_MAX);
+            progressBarStable.setMax(ScaleModule.STABLE_NUM_MAX);
         }
 
         //progressBarStable = (ProgressBar)findViewById(R.id.progressBarStable);
@@ -348,20 +342,6 @@ public class FragmentScales extends Fragment implements /*View.OnClickListener,*
         return false;
     }
 
-    /*public boolean processStable(int weight) {
-        if (tempWeight - scaleModule.getStepScale() <= weight && tempWeight + scaleModule.getStepScale() >= weight) {
-            if (++numStable >= COUNT_STABLE) {
-                return true;
-            }
-        } else {
-            numStable = 0;
-        }
-        tempWeight = weight;
-        return false;
-    }*/
-
-
-
     protected void exit() {
         baseReceiver.unregister();
         //todo System.exit(0);
@@ -369,7 +349,7 @@ public class FragmentScales extends Fragment implements /*View.OnClickListener,*
 
     private void wakeUp(){
         PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = pm.newWakeLock((PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
+        PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
         wakeLock.acquire();
     }
 
@@ -545,18 +525,16 @@ public class FragmentScales extends Fragment implements /*View.OnClickListener,*
             }
         }
 
-        public Intent register() {
+        public void register() {
             isRegistered = true;
-            return mContext.registerReceiver(this, intentFilter);
+            mContext.registerReceiver(this, intentFilter);
         }
 
-        public boolean unregister() {
+        public void unregister() {
             if (isRegistered) {
                 mContext.unregisterReceiver(this);  // edited
                 isRegistered = false;
-                return true;
             }
-            return false;
         }
     }
 

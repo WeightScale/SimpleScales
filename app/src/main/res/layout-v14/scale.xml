@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:ads="http://schemas.android.com/apk/res-auto"
               android:tag="scale"
               android:orientation="vertical"
               android:layout_width="fill_parent"
@@ -42,7 +43,7 @@
                             android:gravity="center" android:clickable="true"
                             style="@style/shadowEffect"
                             android:textStyle="italic"
-                    />
+                            android:singleLine="true"/>
                 </LinearLayout>
 
             </FrameLayout>
@@ -101,6 +102,13 @@
                       android:layout_height="wrap_content"
                       android:id="@+id/listView"/>
         </LinearLayout>
+        <com.google.android.gms.ads.AdView
+                android:id="@+id/adView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                ads:adSize="SMART_BANNER"
+                ads:adUnitId="@string/banner_ad_unit_id">
+        </com.google.android.gms.ads.AdView>
     </LinearLayout>
     <!--<LinearLayout
             android:orientation="horizontal"

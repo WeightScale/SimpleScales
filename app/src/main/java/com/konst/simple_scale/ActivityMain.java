@@ -165,19 +165,8 @@ public class ActivityMain extends Activity {
     }
 
     protected void exit() {
-
-        /*try{
-            scaleModule.stopProcess();
-            scaleModule.dettach();
-        }catch (Exception e){}*/
-        //BluetoothAdapter.getDefaultAdapter().disable();
-        //while (BluetoothAdapter.getDefaultAdapter().isEnabled());
-        //startService(new Intent(this, ServiceScales.class).setAction(ServiceScales.ACTION_CLOSED_SCALES));
         stopService(new Intent(this, ServiceScales.class));
         //todo System.exit(0);
-        //int pid = android.os.Process.myPid();
-        //android.os.Process.killProcess(pid);
-        //System.runFinalization();
     }
 
     class BaseReceiver extends BroadcastReceiver {
@@ -227,12 +216,14 @@ public class ActivityMain extends Activity {
                         break;
                     case InterfaceModule.ACTION_CONNECT_ERROR:
                         String value = intent.getStringExtra(InterfaceModule.EXTRA_MESSAGE);
-                        fragmentTransaction.replace(R.id.fragmentCont, fragmentSearch, fragmentSearch.getClass().getName());
+                        fragmentSearch = new FragmentSearch();
                         if (value!=null){
                             Bundle bundle = new Bundle();
                             bundle.putString(InterfaceModule.EXTRA_MESSAGE, value);
                             fragmentSearch.setArguments(bundle);
                         }
+                        fragmentTransaction.replace(R.id.fragmentCont, fragmentSearch, fragmentSearch.getClass().getName());
+
                         fragmentTransaction.commit();
                         break;
                     default:

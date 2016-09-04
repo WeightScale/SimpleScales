@@ -14,7 +14,6 @@ import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.konst.module.InterfaceModule;
@@ -240,7 +239,7 @@ public class FragmentSearch extends Fragment implements View.OnClickListener {
                             //finish();
                             break;
                         case STATUS_VERSION_UNKNOWN:
-                            log(msg + " "  + getString(R.string.not_scale));
+                            log(msg + ' ' + getString(R.string.not_scale));
                             break;
                         case STATUS_ATTACH_START:
                             listView.setEnabled(false);
@@ -280,11 +279,11 @@ public class FragmentSearch extends Fragment implements View.OnClickListener {
     };
 
     class BaseReceiver extends BroadcastReceiver {
-        Context mContext;
+        final Context mContext;
         SpannableStringBuilder w;
         Rect bounds;
         ProgressDialog dialogSearch;
-        IntentFilter intentFilter;
+        final IntentFilter intentFilter;
         protected boolean isRegistered;
 
         BaseReceiver(Context context){
@@ -343,18 +342,16 @@ public class FragmentSearch extends Fragment implements View.OnClickListener {
             }
         }
 
-        public Intent register() {
+        public void register() {
             isRegistered = true;
-            return mContext.registerReceiver(this, intentFilter);
+            mContext.registerReceiver(this, intentFilter);
         }
 
-        public boolean unregister() {
+        public void unregister() {
             if (isRegistered) {
                 mContext.unregisterReceiver(this);  // edited
                 isRegistered = false;
-                return true;
             }
-            return false;
         }
     }
 

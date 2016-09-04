@@ -117,7 +117,8 @@ public class ServiceScales extends Service {
                 stopSelf();
             } catch (ErrorDeviceException e) {
                 //connectResultCallback.resultConnect(Module.ResultConnect.CONNECT_ERROR, e.getMessage(), null);
-                Toast.makeText(getBaseContext(),e.getMessage(), Toast.LENGTH_SHORT).show();
+                sendBroadcast(new Intent(InterfaceModule.ACTION_CONNECT_ERROR).putExtra(InterfaceModule.EXTRA_MESSAGE, e.getMessage()));
+                //Toast.makeText(getBaseContext(),e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -370,8 +371,8 @@ public class ServiceScales extends Service {
     }
 
     class BaseReceiver extends BroadcastReceiver{
-        private Context context;
-        private IntentFilter intentFilter;
+        private final Context context;
+        private final IntentFilter intentFilter;
         private boolean isRegistered;
 
         BaseReceiver(Context context){
